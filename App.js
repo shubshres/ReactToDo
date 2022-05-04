@@ -1,11 +1,59 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react'; 
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
+import Task from './componentes/tasks';
 
 export default function App() {
+  const [task, setTask] = useState(); 
+  const [taskItems, setTaskItems] = useState([]); 
+
+  {/* Function That Handles Added Tasks - log task that was stored in state*/}
+  const handleAddedTask = () => {
+    setTaskItems([...taskItems, task]) 
+    setTask(null); 
+  }
+
+  const deleteTask = (index) => {
+    let itemsCopy = [...taskItems]; 
+    itemsCopy.splice(index, 1); 
+    setTaskItems(itemsCopy); 
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {/* Today's Tasks */}
+      <View style={styles.tasksWrapper}>
+        <Text style={styles.sectionTitle}>Today's Tasks</Text>
+        <View style={styles.items}>
+          {/* This is where the tasks will go */}
+          {/* Iterate through array */}
+          {
+            taskItems.map((item, index) =>{
+              return (
+                <TouchableOpacity key={index} onPress={() => deleteTask(index)}>
+                  <Task text={item}/>
+                </TouchableOpacity>
+              )
+            })
+          }
+        </View>
+      </View>
+
+      {/* Writing a Task */}
+      {/* When you click on the keyboard the keyboard pops up and pushes everything up rather than covers it */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.writeTaskWrapper}
+      >
+
+        <TextInput style={styles.input} placeholder = {"Write a Task"} value = {task} onChangeText={text => setTask(text)}/>
+
+        <TouchableOpacity onPress = {() => handleAddedTask()}>
+          <View style={styles.addWrapper}>
+            <Text style={styles.addText}>+</Text>
+          </View>
+        </TouchableOpacity>
+
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -13,8 +61,45 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#E8EAED",
   },
+  tasksWrapper: {
+    paddingTop: 80,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  items: {
+    marginTop: 20,
+  },
+  writeTaskWrapper: {
+    position: "absolute",
+    bottom: 60,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  input: {
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    backgroundColor: "#FFFF",
+    borderRadius: 20,
+    borderColor: "#C0C0C0",
+    borderWidth: 0.25,
+    width: 250,
+  },
+  addWrapper: {
+    width: 60,
+    height: 60,
+    backgroundColor: "#FFFF",
+    borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "#C0C0C0",
+    borderWidth: 0.25,
+  },
+  addText: {},
 });
